@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1022518167538",
+    "firebase_url": "https://jankenpon-23e1d.firebaseio.com",
+    "project_id": "jankenpon-23e1d",
+    "storage_bucket": "jankenpon-23e1d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022518167538:android:6e1e31352900dbcf",
+        "android_client_info": {
+          "package_name": "com.projet.android.jankenpon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022518167538-3gei706rs08g5hrd0lanb7glita6c667.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projet.android.jankenpon",
+            "certificate_hash": "65db8c093a0c86a3c20e664a321859539b52cb50"
+          }
+        },
+        {
+          "client_id": "1022518167538-8ichklts9i8p0lkobf2ibtueekhv2m42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-SivBx_m8m6wU9nSherrd2Bf5yBYpszw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022518167538-8ichklts9i8p0lkobf2ibtueekhv2m42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
