@@ -3,6 +3,8 @@ package com.projet.android.jankenpon;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,14 +22,19 @@ public class ScoresActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
 
+        ListView listView = (ListView)findViewById(R.id.listScores);
+
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
         } else {
-            // createFakeData();
+            createFakeData();
             readCache();
         }
 
         // TODO: Use an adapter to display scores as a ListView
+        ArrayAdapter<Score> arrayAdapter
+                = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
+        listView.setAdapter(arrayAdapter);
     }
 
     public boolean isCacheEmpty() {
