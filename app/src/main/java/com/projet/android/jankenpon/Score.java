@@ -1,21 +1,31 @@
 package com.projet.android.jankenpon;
 
 public class Score {
-    private String playerVictories;
-    private String opponentVictories;
+    private int playerVictories;
+    private int opponentVictories;
     private String opponent;
 
+    public Score() {
+        // Default constructor required for calls to DataSnapshot.getValue(Score.class)
+    }
+
     public Score(char playerVictories, char opponentVictories, String opponent) {
-        this.playerVictories = String.valueOf(playerVictories);
-        this.opponentVictories = String.valueOf(opponentVictories);
+        this.playerVictories = Character.getNumericValue(playerVictories);
+        this.opponentVictories = Character.getNumericValue(opponentVictories);
         this.opponent = opponent;
     }
 
-    public String getPlayerVictories() {
+    public Score(int playerVictories, int opponentVictories, String opponent) {
+        this.playerVictories = playerVictories;
+        this.opponentVictories = opponentVictories;
+        this.opponent = opponent;
+    }
+
+    public int getPlayerVictories() {
         return playerVictories;
     }
 
-    public String getOpponentVictories() {
+    public int getOpponentVictories() {
         return opponentVictories;
     }
 
@@ -23,12 +33,16 @@ public class Score {
         return opponent;
     }
 
-    public String toString() {
+    public String getMessage() {
         return getStatus() + " contre " + this.opponent;
     }
 
+    public String toString() {
+        return playerVictories + " - " + opponentVictories + " " + getMessage();
+    }
+
     public String getStatus() {
-        return Integer.parseInt(playerVictories) > Integer.parseInt(opponentVictories) ? "Victoire" : "Defaite";
+        return playerVictories > opponentVictories ? "Victoire" : "Defaite";
     }
 
     public String toStream() {
