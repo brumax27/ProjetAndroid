@@ -27,7 +27,7 @@ public class ScoresActivity extends AppCompatActivity {
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
         } else {
-            createFakeData();
+            //createFakeData();
             readCache();
         }
 
