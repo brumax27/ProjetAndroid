@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+/*
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;import java.io.BufferedReader;
-
+*/
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,7 +31,8 @@ public class ScoresActivity extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.listScores);
 
         if (isCacheEmpty()) {
-            fetchScoreFromFirebase();
+            //fetchScoreFromFirebase();
+            createFakeData();
             //createFakeData();
         } else {
             //createFakeData();
@@ -46,7 +47,7 @@ public class ScoresActivity extends AppCompatActivity {
     public void fetchScoreFromFirebase() {
         // TODO: Fetch scores from Firebase
     }
-
+*/
     public void createFakeData() {
         for (int i = 0; i < 5; i++) {
             scores.add(new Score('2', '1', "Bidule"));
