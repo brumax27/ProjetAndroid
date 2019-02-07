@@ -6,6 +6,12 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;import java.io.BufferedReader;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +32,7 @@ public class ScoresActivity extends AppCompatActivity {
 
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
+            //createFakeData();
         } else {
             //createFakeData();
             readCache();
@@ -36,11 +43,6 @@ public class ScoresActivity extends AppCompatActivity {
                 = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
         listView.setAdapter(arrayAdapter);
     }
-
-    public boolean isCacheEmpty() {
-        return false;
-    }
-
     public void fetchScoreFromFirebase() {
         // TODO: Fetch scores from Firebase
     }
