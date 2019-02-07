@@ -34,6 +34,7 @@ public class ScoresActivity extends AppCompatActivity {
 
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
+
         } else {
             // createFakeData();            readCache();
             // TODO : Send to adaptater
@@ -42,7 +43,6 @@ public class ScoresActivity extends AppCompatActivity {
                 = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
         listView.setAdapter(arrayAdapter);
     }
-
 
     public void fetchScoreFromFirebase() {
         mFirebaseInstance = FirebaseDatabase.getInstance();
