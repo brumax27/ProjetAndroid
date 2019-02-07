@@ -6,6 +6,12 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +22,8 @@ import java.util.List;
 
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
+    private DatabaseReference mFirebaseDatabase;
+    private FirebaseDatabase mFirebaseInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,22 +35,40 @@ public class ScoresActivity extends AppCompatActivity {
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
         } else {
-            //createFakeData();
-            readCache();
+            // createFakeData();            readCache();
+            // TODO : Send to adaptater
         }
-
-        // TODO: Use an adapter to display scores as a ListView
         ArrayAdapter<Score> arrayAdapter
                 = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
         listView.setAdapter(arrayAdapter);
     }
 
-    public boolean isCacheEmpty() {
-        return false;
-    }
 
     public void fetchScoreFromFirebase() {
-        // TODO: Fetch scores from Firebase
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        // TODO : Replace "1" by current player id
+        mFirebaseDatabase = mFirebaseInstance.getReference("matches").child("1");
+
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot scoreSnapshot : dataSnapshot.getChildren()) {
+                    Score score = scoreSnapshot.getValue(Score.class);
+                    scores.add(score);
+                }
+
+                writeCache();
+                logList("FROM FIREBASE");
+                // TODO : Send to adaptater
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        mFirebaseDatabase.addValueEventListener(userListener);
     }
 
     public void createFakeData() {
@@ -51,6 +77,14 @@ public class ScoresActivity extends AppCompatActivity {
             scores.add(new Score('0', '2', "Machin"));
         }
         writeCache();
+    }
+
+    public boolean isCacheEmpty() {
+        File cacheFile = new File(getCacheDir(), "scores.txt");
+        if(cacheFile.exists()) {
+            return false;
+        }
+        return true;
     }
 
     public void readCache() {
@@ -65,7 +99,17 @@ public class ScoresActivity extends AppCompatActivity {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        logCache();
+        logList("FROM CACHE");
+    }
+
+    public void resetCache() {
+        deleteCache();
+        writeCache();
+    }
+
+    public void deleteCache() {
+        File cacheFile = new File(getCacheDir(), "scores.txt");
+        cacheFile.delete();
     }
 
     public void writeCache() {
@@ -86,9 +130,10 @@ public class ScoresActivity extends AppCompatActivity {
         fos.flush();
     }
 
-    public void logCache() {
+    public void logList(String msg) {
+        Log.i("SCORE_TAG", msg);
         for (Score score : scores) {
-            Log.i("SCORE", score.toString());
+            Log.i("SCORE_TAG", score.toString());
         }
     }
 }
