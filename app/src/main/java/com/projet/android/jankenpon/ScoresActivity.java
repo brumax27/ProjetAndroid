@@ -31,7 +31,7 @@ public class ScoresActivity extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.listScores);
 
         if (isCacheEmpty()) {
-            //fetchScoreFromFirebase();
+            fetchScoreFromFirebase();
             createFakeData();
             //createFakeData();
         } else {
@@ -44,16 +44,26 @@ public class ScoresActivity extends AppCompatActivity {
                 = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
         listView.setAdapter(arrayAdapter);
     }
+
+
     public void fetchScoreFromFirebase() {
         // TODO: Fetch scores from Firebase
     }
-*/
+
     public void createFakeData() {
         for (int i = 0; i < 5; i++) {
             scores.add(new Score('2', '1', "Bidule"));
             scores.add(new Score('0', '2', "Machin"));
         }
         writeCache();
+    }
+
+    public boolean isCacheEmpty() {
+        File cacheFile = new File(getCacheDir(), "scores.txt");
+        if(cacheFile.exists()) {
+            return false;
+        }
+        return true;
     }
 
     public void readCache() {
