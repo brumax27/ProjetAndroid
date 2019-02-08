@@ -1,4 +1,4 @@
-package com.projet.android.jankenpon;
+package com.projet.android.jankenpon.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.projet.android.jankenpon.R;
+import com.projet.android.jankenpon.entity.User;
 
 /**
  * Implementation of App Widget functionality.

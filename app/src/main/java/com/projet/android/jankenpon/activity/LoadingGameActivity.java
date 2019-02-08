@@ -1,16 +1,12 @@
-package com.projet.android.jankenpon;
+package com.projet.android.jankenpon.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
 
 import com.github.silvestrpredko.dotprogressbar.DotProgressBar;
 import com.github.silvestrpredko.dotprogressbar.DotProgressBarBuilder;
+import com.projet.android.jankenpon.R;
 
 public class LoadingGameActivity extends AppCompatActivity {
 

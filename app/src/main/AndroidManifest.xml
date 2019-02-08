@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,11 +18,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoadingGameActivity"></activity>
+        <activity android:name=".activity.LoadingGameActivity"></activity>
 
-        <activity android:name=".ScoresActivity"></activity>
+        <activity android:name=".activity.ScoresActivity"></activity>
 
-        <receiver android:name=".TendencyWidget">
+        <receiver android:name=".widget.TendencyWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

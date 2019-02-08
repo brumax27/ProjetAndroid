@@ -1,4 +1,4 @@
-package com.projet.android.jankenpon;
+package com.projet.android.jankenpon.entity;
 
 public class User {
     private String pseudo;
