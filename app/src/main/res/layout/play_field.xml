@@ -28,7 +28,6 @@
             android:contentDescription="@string/rock"
             android:src="@drawable/rock" />
 
-        </LinearLayout>
 
 </LinearLayout>
 
