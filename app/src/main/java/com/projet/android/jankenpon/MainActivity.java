@@ -1,6 +1,8 @@
 package com.projet.android.jankenpon;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,11 +15,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button play = findViewById(R.id.results);
-        play.setOnClickListener(new View.OnClickListener() {
+        Button result = findViewById(R.id.results);
+        result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ScoresActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button play = findViewById(R.id.play);
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LoadingGameActivity.class);
                 startActivity(intent);
             }
         });
@@ -31,3 +42,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
