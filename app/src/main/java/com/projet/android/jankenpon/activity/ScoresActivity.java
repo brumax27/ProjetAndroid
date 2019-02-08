@@ -22,36 +22,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-*/
-
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
     private DatabaseReference mFirebaseDatabase;
     private FirebaseDatabase mFirebaseInstance;
+    private ListView listView;
+    private ArrayAdapter<Score> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
 
-        ListView listView = (ListView)findViewById(R.id.listScores);
+        listView = (ListView)findViewById(R.id.listScores);
 
+        arrayAdapter = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
         if (isCacheEmpty()) {
             fetchScoreFromFirebase();
         } else {
-            // createFakeData();
-             readCache();
-            // TODO : Send to adaptater
+            readCache();
+            listView.setAdapter(arrayAdapter);
         }
-        ArrayAdapter<Score> arrayAdapter
-                = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
-        listView.setAdapter(arrayAdapter);
     }
 
     public void fetchScoreFromFirebase() {
@@ -66,10 +57,9 @@ public class ScoresActivity extends AppCompatActivity {
                     Score score = scoreSnapshot.getValue(Score.class);
                     scores.add(score);
                 }
-
                 writeCache();
                 logList("FROM FIREBASE");
-                // TODO : Send to adaptater
+                listView.setAdapter(arrayAdapter);
             }
 
             @Override
@@ -79,14 +69,6 @@ public class ScoresActivity extends AppCompatActivity {
             }
         };
         mFirebaseDatabase.addValueEventListener(userListener);
-    }
-
-    public void createFakeData() {
-        for (int i = 0; i < 5; i++) {
-            scores.add(new Score('2', '1', "Bidule"));
-            scores.add(new Score('0', '2', "Machin"));
-        }
-        writeCache();
     }
 
     public boolean isCacheEmpty() {
