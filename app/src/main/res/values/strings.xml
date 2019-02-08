@@ -4,4 +4,7 @@
     <string name="results">RESULTS</string>
     <string name="quit">QUIT</string>
     <string name="loading_game">Préparation du terrain</string>
+    <string name="scissors">scissors</string>
+    <string name="rock">rock</string>
+    <string name="paper">paper</string>
 </resources>
