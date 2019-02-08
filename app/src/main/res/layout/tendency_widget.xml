@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#09C"
+    android:padding="@dimen/widget_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/victory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taux de victoire : " />
+
+            <TextView
+                android:id="@+id/victory_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 %" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/rock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taux de Pierres : " />
+
+            <TextView
+                android:id="@+id/rock_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 %" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/paper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taux de Feuilles : " />
+
+            <TextView
+                android:id="@+id/paper_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 %" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/scissors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taux de Ciseaux : " />
+
+            <TextView
+                android:id="@+id/scissors_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 %" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

@@ -4,4 +4,6 @@
     <string name="results">RESULTS</string>
     <string name="quit">QUIT</string>
     <string name="loading_game">Préparation du terrain</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>
