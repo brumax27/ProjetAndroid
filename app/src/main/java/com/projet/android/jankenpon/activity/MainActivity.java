@@ -33,6 +33,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.sign_out_button).setVisibility(View.GONE);
+        findViewById(R.id.play).setVisibility(View.GONE);
+        findViewById(R.id.results).setVisibility(View.GONE);
+
         getClients();
 
         findViewById(R.id.results).setOnClickListener(new View.OnClickListener() {
@@ -74,6 +77,8 @@ public class MainActivity extends Activity {
                     public void onComplete(@NonNull Task<Void> task) {
                         findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
                         findViewById(R.id.sign_out_button).setVisibility(View.GONE);
+                        findViewById(R.id.play).setVisibility(View.GONE);
+                        findViewById(R.id.results).setVisibility(View.GONE);
                     }
                 });
             }
@@ -89,6 +94,8 @@ public class MainActivity extends Activity {
             CreateNewAccount(account);
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.play).setVisibility(View.VISIBLE);
+            findViewById(R.id.results).setVisibility(View.VISIBLE);
         }
     }
 
