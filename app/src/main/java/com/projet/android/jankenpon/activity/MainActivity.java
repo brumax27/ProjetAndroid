@@ -13,12 +13,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.projet.android.jankenpon.R;
+import com.projet.android.jankenpon.entity.User;
 
 public class MainActivity extends Activity {
 
     private static final int REQUEST_CODE = 7645;
     private GoogleSignInClient client = null ;
+    FirebaseDatabase mFirebaseInstance;
+    DatabaseReference mFirebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +86,31 @@ public class MainActivity extends Activity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
         if (account != null){
+            CreateNewAccount(account);
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
         }
+    }
+
+    private void CreateNewAccount(final GoogleSignInAccount account) {
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = mFirebaseInstance.getReference("users").child(account.getId());
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if(user == null) {
+                    user = new User(account.getDisplayName());
+                    mFirebaseDatabase.setValue(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        mFirebaseDatabase.addListenerForSingleValueEvent(userListener);
     }
 
     private void getClients(){

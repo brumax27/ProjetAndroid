@@ -12,13 +12,13 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String pseudo, int rockHits, int paperHits, int scissorsHits, int victories, int defeats) {
+    public User(String pseudo) {
         this.pseudo = pseudo;
-        this.rockHits = rockHits;
-        this.paperHits = paperHits;
-        this.scissorsHits = scissorsHits;
-        this.victories = victories;
-        this.defeats = defeats;
+        this.rockHits = 0;
+        this.paperHits = 0;
+        this.scissorsHits = 0;
+        this.victories = 0;
+        this.defeats = 0;
     }
 
     public String getPseudo() {
