@@ -1,33 +1,30 @@
 package com.projet.android.jankenpon.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.projet.android.jankenpon.R;
 import com.projet.android.jankenpon.entity.Score;
+import com.projet.android.jankenpon.io.CacheScoresUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
-    private DatabaseReference mFirebaseDatabase;
-    private FirebaseDatabase mFirebaseInstance;
     private ListView listView;
     private ArrayAdapter<Score> arrayAdapter;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,96 +33,39 @@ public class ScoresActivity extends AppCompatActivity {
 
         listView = (ListView)findViewById(R.id.listScores);
 
-        arrayAdapter = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores);
-        if (isCacheEmpty()) {
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1 , scores);
+        if (CacheScoresUtil.isCacheEmpty(context)) {
             fetchScoreFromFirebase();
         } else {
-            readCache();
+            scores = CacheScoresUtil.readCache(context);
             listView.setAdapter(arrayAdapter);
         }
     }
 
     public void fetchScoreFromFirebase() {
-        mFirebaseInstance = FirebaseDatabase.getInstance();
-        // TODO : Replace "1" by current player id
-        mFirebaseDatabase = mFirebaseInstance.getReference("matches").child("1");
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        FirebaseDatabase.getInstance()
+                .getReference("matches")
+                .child(account.getId())
+                .addValueEventListener( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot scoreSnapshot : dataSnapshot.getChildren()) {
+                            Score score = scoreSnapshot.getValue(Score.class);
+                            scores.add(score);
+                        }
+                        CacheScoresUtil.writeCache(context, scores);
+                        CacheScoresUtil.logList("FROM FIREBASE",scores);
+                        listView.setAdapter(arrayAdapter);
+                    }
 
-        ValueEventListener userListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot scoreSnapshot : dataSnapshot.getChildren()) {
-                    Score score = scoreSnapshot.getValue(Score.class);
-                    scores.add(score);
-                }
-                writeCache();
-                logList("FROM FIREBASE");
-                listView.setAdapter(arrayAdapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
-            }
-        };
-        mFirebaseDatabase.addValueEventListener(userListener);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
+                    }
+                });
     }
 
-    public boolean isCacheEmpty() {
-        File cacheFile = new File(getCacheDir(), "scores.txt");
-        if(cacheFile.exists()) {
-            return false;
-        }
-        return true;
-    }
 
-    public void readCache() {
-        File cacheDir = getCacheDir();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(cacheDir.getPath() + "/scores.txt"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                Score score = new Score(line.charAt(0), line.charAt(2), line.substring(4));
-                scores.add(score);
-            }
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        logList("FROM CACHE");
-    }
-
-    public void resetCache() {
-        deleteCache();
-        writeCache();
-    }
-
-    public void deleteCache() {
-        File cacheFile = new File(getCacheDir(), "scores.txt");
-        cacheFile.delete();
-    }
-
-    public void writeCache() {
-        File cacheDir = getCacheDir();
-        try {
-            FileOutputStream fos = new FileOutputStream(cacheDir.getPath() + "/scores.txt");
-            writeDataToFOS(fos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void writeDataToFOS(FileOutputStream fos) throws IOException {
-        for(Score score : scores) {
-            fos.write(score.toStream().getBytes());
-            fos.write('\n');
-        }
-        fos.flush();
-    }
-
-    public void logList(String msg) {
-        Log.i("SCORE_TAG", msg);
-        for (Score score : scores) {
-            Log.i("SCORE_TAG", score.toString());
-        }
-    }
 }
