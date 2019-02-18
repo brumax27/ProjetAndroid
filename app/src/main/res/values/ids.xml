@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="appwidget_text" type="id" />
+    <string name="app_id">1022518167538</string>
 </resources>
