@@ -6,9 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -19,6 +18,9 @@ import com.projet.android.jankenpon.io.CacheScoresUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//import com.google.android.gms.auth.api.signin.GoogleSignIn;
+//import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
@@ -39,14 +41,15 @@ public class ScoresActivity extends AppCompatActivity {
         } else {
             scores = CacheScoresUtil.readCache(context);
             listView.setAdapter(arrayAdapter);
+            Toast.makeText(this, "Size Score : " + scores.size(), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void fetchScoreFromFirebase() {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseDatabase.getInstance()
                 .getReference("matches")
-                .child(account.getId())
+                .child("1")
                 .addValueEventListener( new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
