@@ -22,7 +22,7 @@ public class TendencyWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, final AppWidgetManager appWidgetManager,
                                 final int appWidgetId) {
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
+        String widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.tendency_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
@@ -81,10 +81,6 @@ public class TendencyWidget extends AppWidgetProvider {
             }
         };
         mFirebaseDatabase.addValueEventListener(userListener);
-    }
-
-    private interface TendencyDataProvider {
-        void onFetch(User user);
     }
 }
 
