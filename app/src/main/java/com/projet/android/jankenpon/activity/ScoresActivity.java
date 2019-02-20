@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.projet.android.jankenpon.R;
 import com.projet.android.jankenpon.entity.Score;
 import com.projet.android.jankenpon.io.CacheScoresUtil;
@@ -21,7 +22,6 @@ import java.util.List;
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
     private ListView listView;
-    private ArrayAdapter<Score> arrayAdapter;
     private Context context = this;
 
     @Override
@@ -29,25 +29,24 @@ public class ScoresActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
 
-        listView = (ListView)findViewById(R.id.listScores);
+        listView = findViewById(R.id.listScores);
+        listView.setAdapter(new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1 , scores));
 
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1 , scores);
         if (CacheScoresUtil.isCacheEmpty(context)) {
-            fetchScoreFromFirebase();
+
+            //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+            new FirebaseScoreUtils(FirebaseDatabase.getInstance()).getByPlayerId("1",scores);
+            if (scores != null && !scores.isEmpty()) {
+                CacheScoresUtil.writeCache(context, scores);
+                CacheScoresUtil.logList("FROM FIREBASE", scores);
+            }
+
         } else {
+
             scores = CacheScoresUtil.readCache(context);
-            listView.setAdapter(arrayAdapter);
             Toast.makeText(this, "Size Score : " + scores.size(), Toast.LENGTH_SHORT).show();
+
         }
+
     }
-
-    public void fetchScoreFromFirebase() {
-        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        scores = new FirebaseScoreUtils().getByPlayerId("1");
-        CacheScoresUtil.writeCache(context, scores);
-        CacheScoresUtil.logList("FROM FIREBASE",scores);
-        listView.setAdapter(arrayAdapter);
-    }
-
-
 }

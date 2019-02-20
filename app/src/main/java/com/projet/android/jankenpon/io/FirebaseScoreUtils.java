@@ -9,15 +9,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.projet.android.jankenpon.entity.Score;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class FirebaseScoreUtils {
 
     private FirebaseDatabase database;
 
-    public List<Score> getByPlayerId(String playerId) {
-        final List<Score> scores = new ArrayList<>();
+    public FirebaseScoreUtils() {
+    }
+
+    public FirebaseScoreUtils(FirebaseDatabase database) {
+        this.database = database;
+    }
+
+    public void getByPlayerId(String playerId, final List<Score> scores) {
         database.getReference("matches").child(playerId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -32,10 +37,11 @@ public final class FirebaseScoreUtils {
                 Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
             }
         });
-        return scores;
     }
 
-    public void addScore(final Score score){
-        database.getReference("matches").child(String.valueOf(score.getPlayerVictories())).setValue(score);
+    public void addScores(final List<Score> scores){
+        database.getReference("matches")
+                .child(String.valueOf(scores.get(0).getPlayerVictories()))
+                .setValue(scores);
     }
 }

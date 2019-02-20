@@ -23,15 +23,13 @@ public final class FirebaseUserUtils {
         this.database = database;
     }
 
-    public List<User> getByPlayerId(String playerId) {
+    public void getByPlayerId(String playerId, final User user) {
         final List<User> users = new ArrayList<>();
-        database.getReference("users").child(playerId).addValueEventListener(new ValueEventListener() {
+        database.getReference("users").child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot scoreSnapshot : dataSnapshot.getChildren()) {
-                    User user = scoreSnapshot.getValue(User.class);
-                    users.add(user);
-                }
+                User userSnap = dataSnapshot.getValue(User.class);
+                user.clone(userSnap);
             }
 
             @Override
@@ -39,10 +37,32 @@ public final class FirebaseUserUtils {
                 Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
             }
         });
-        return users;
     }
 
-    public void addScore(final User user, String googleAccountId){
+    public void updateUser(String googleAccountId, final User user) {
+        final List<User> users = new ArrayList<>();
+        database.getReference("users").child(googleAccountId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User userSnap = dataSnapshot.getValue(User.class);
+                user.setVictories(userSnap.getVictories());
+                user.setDefeats(userSnap.getDefeats());
+
+                user.addPaperHits(userSnap.getPaperHits())
+                    .addRockHits(userSnap.getRockHits())
+                    .addScissorsHits(userSnap.getScissorsHits());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+        database.getReference("users").child(googleAccountId).setValue(user);
+    }
+
+
+    public void addUser(final User user, String googleAccountId){
         database.getReference("users").child(googleAccountId).setValue(user);
     }
 }

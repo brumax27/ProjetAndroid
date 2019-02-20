@@ -12,6 +12,19 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    public void clone(User user) {
+        this.pseudo = user.getPseudo();
+        this.rockHits = user.getRockHits();
+        this.paperHits = user.getPaperHits();
+        this.scissorsHits = user.getScissorsHits();
+        this.victories = user.getVictories();
+        this.defeats = user.getDefeats();
+    }
+
+    public User(String pseudo) {
+        this.pseudo = pseudo;
+    }
+
     public User(String pseudo, int rockHits, int paperHits, int scissorsHits, int victories, int defeats) {
         this.pseudo = pseudo;
         this.rockHits = rockHits;
@@ -43,6 +56,52 @@ public class User {
 
     public int getDefeats() {
         return defeats;
+    }
+
+    public User addRockHits(int rockHits) {
+        this.rockHits += rockHits;
+        return this;
+    }
+
+    public User addPaperHits(int paperHits) {
+        this.paperHits += paperHits;
+        return this;
+    }
+
+    public User addScissorsHits(int scissorsHits) {
+        this.scissorsHits += scissorsHits;
+        return this;
+    }
+
+    public User addVictories(int victories) {
+        this.victories += victories;
+        return this;
+    }
+
+    public User addDefeats(int defeats) {
+        this.defeats += defeats;
+        return this;
+    }
+
+
+    public void setRockHits(int rockHits) {
+        this.rockHits = rockHits;
+    }
+
+    public void setPaperHits(int paperHits) {
+        this.paperHits = paperHits;
+    }
+
+    public void setScissorsHits(int scissorsHits) {
+        this.scissorsHits = scissorsHits;
+    }
+
+    public void setVictories(int victories) {
+        this.victories = victories;
+    }
+
+    public void setDefeats(int defeats) {
+        this.defeats = defeats;
     }
 
     public int totalBattles() {
