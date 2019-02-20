@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.FirebaseDatabase;
 import com.projet.android.jankenpon.R;
 import com.projet.android.jankenpon.entity.Score;
@@ -15,9 +17,6 @@ import com.projet.android.jankenpon.io.FirebaseScoreUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//import com.google.android.gms.auth.api.signin.GoogleSignIn;
-//import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 public class ScoresActivity extends AppCompatActivity {
     List<Score> scores = new ArrayList<>();
@@ -34,7 +33,7 @@ public class ScoresActivity extends AppCompatActivity {
 
         if (CacheScoresUtil.isCacheEmpty(context)) {
 
-            //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
             new FirebaseScoreUtils(FirebaseDatabase.getInstance()).getByPlayerId("1",scores);
             if (scores != null && !scores.isEmpty()) {
                 CacheScoresUtil.writeCache(context, scores);

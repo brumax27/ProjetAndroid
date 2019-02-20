@@ -6,9 +6,10 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.projet.android.jankenpon.R;
@@ -27,7 +28,7 @@ public class TendencyWidget extends AppWidgetProvider {
         final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.tendency_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
 
-        fetchTendencies(new TendencyDataProvider() {
+        fetchTendencies(context, new TendencyDataProvider() {
             @Override
             public void onFetch(User user) {
                 views.setTextViewText(R.id.victory_ratio, user.victoryRatio() + " %");
@@ -62,12 +63,9 @@ public class TendencyWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    public static void fetchTendencies(final TendencyDataProvider tendencyDataProvider) {
-        FirebaseDatabase mFirebaseInstance = FirebaseDatabase.getInstance();
-        // TODO : Replace "1" by current player id
-        DatabaseReference mFirebaseDatabase = mFirebaseInstance.getReference("users").child("1");
-
-        ValueEventListener userListener = new ValueEventListener() {
+    public static void fetchTendencies(Context context, final TendencyDataProvider tendencyDataProvider) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(context);
+        FirebaseDatabase.getInstance().getReference("users").child(account.getId()).addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -79,8 +77,7 @@ public class TendencyWidget extends AppWidgetProvider {
                 // Getting Post failed, log a message
                 Log.w("DATABASE_TAG", "loadPost:onCancelled", databaseError.toException());
             }
-        };
-        mFirebaseDatabase.addValueEventListener(userListener);
+        });
     }
 }
 
