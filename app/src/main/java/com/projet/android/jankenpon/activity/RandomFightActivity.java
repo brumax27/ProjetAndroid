@@ -34,8 +34,8 @@ public class RandomFightActivity extends AppCompatActivity {
         int playerState = STATE_PAPER;
         int enemyState = STATE_ROCK;
 
-        int currentTime = 4000;
-        int startTime = 4000;
+        int currentTime = 5000;
+        int startTime = 5000;
 
         int currentPoints = 0;
 
@@ -99,6 +99,7 @@ public class RandomFightActivity extends AppCompatActivity {
                             currentTime = startTime;
                             progressBar.setProgress(currentTime);
 
+                            //chay them game tiep theo khi win 1 luot
                             handler.postDelayed(runnable, 100);
                         } else {
                             iv_player.setEnabled(false);
@@ -107,6 +108,7 @@ public class RandomFightActivity extends AppCompatActivity {
                     }
                 }
             };
+
             handler.postDelayed(runnable, 100);
         }
 
