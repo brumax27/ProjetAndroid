@@ -58,8 +58,8 @@ public class LoadingGameActivity extends AppCompatActivity {
                 .setAnimationDirection(DotProgressBar.LEFT_DIRECTION)
                 .build();
 
-//        startQuickGame(0x0);
-        invitePlayers();
+        startQuickGame(0x0);
+//        invitePlayers();
     }
 
     private void startQuickGame(long role) {
@@ -68,12 +68,11 @@ public class LoadingGameActivity extends AppCompatActivity {
         Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, role);
 
         // build the room config:
-        RoomConfig roomConfig =
-                RoomConfig.builder(mRoomUpdateCallback)
-                        .setOnMessageReceivedListener(mMessageReceivedHandler)
-                        .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
-                        .setAutoMatchCriteria(autoMatchCriteria)
-                        .build();
+        RoomConfig roomConfig = RoomConfig.builder(mRoomUpdateCallback)
+                .setOnMessageReceivedListener(mMessageReceivedHandler)
+                .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
+                .setAutoMatchCriteria(autoMatchCriteria)
+                .build();
 
         // prevent screen from sleeping during handshake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
