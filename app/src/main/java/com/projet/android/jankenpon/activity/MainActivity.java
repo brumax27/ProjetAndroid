@@ -93,8 +93,12 @@ public class MainActivity extends Activity {
     }
 
     private void startSignInIntent() {
-        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
-                GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestId()
+                .requestEmail()
+                .build();
+
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this, gso);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(intent, REQUEST_CODE);
     }
