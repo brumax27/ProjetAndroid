@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="@color/white"
+    tools:context=".activity.RandomFightActivity">
+
+    <TextView
+        android:id="@+id/pc"
+        android:layout_width="wrap_content"
+        android:layout_height="47dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="-5dp"
+        android:layout_marginEnd="101dp"
+        android:layout_marginBottom="444dp"
+        android:text="Computer"
+        android:textSize="25dp" />
+
+    <TextView
+        android:id="@+id/tv_player"
+        android:layout_width="223dp"
+        android:layout_height="189dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="141dp"
+        android:layout_marginTop="169dp"
+        android:layout_marginBottom="133dp"
+        android:text="Joueur"
+        android:textSize="25dp" />
+
+    <ImageView
+        android:id="@+id/iv_pc"
+        android:layout_width="122dp"
+        android:layout_height="118dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="38dp"
+        android:layout_marginEnd="124dp"
+        android:layout_marginBottom="322dp"
+        app:srcCompat="@drawable/rock" />
+
+    <ImageView
+        android:id="@+id/ic_player"
+        android:layout_width="134dp"
+        android:layout_height="126dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="208dp"
+        android:layout_marginEnd="110dp"
+        android:layout_marginBottom="154dp"
+        app:srcCompat="@drawable/paper" />
+
+    <Button
+        android:id="@+id/b_rock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="PIERRE" />
+
+    <Button
+        android:id="@+id/b_paper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/b_rock"
+        android:layout_alignEnd="@+id/ic_player"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="12dp"
+        android:text="FEUILLE" />
+
+    <Button
+        android:id="@+id/b_scissors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/b_rock"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="22dp"
+        android:text="CISEAUX" />
+
+    <ImageView
+        android:id="@+id/b_back"
+        android:layout_width="44dp"
+        android:layout_height="58dp"
+        android:layout_alignTop="@+id/iv_pc"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="-37dp"
+        app:srcCompat="@drawable/back" />
+
+    <ImageView
+        android:id="@+id/b_replay"
+        android:layout_width="70dp"
+        android:layout_height="44dp"
+        android:layout_alignTop="@+id/iv_pc"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="294dp"
+        android:layout_marginTop="-31dp"
+        app:srcCompat="@drawable/replay" />
+
+    <TextView
+        android:id="@+id/tv_scores"
+        android:layout_width="292dp"
+        android:layout_height="57dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="342dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="100dp"
+        android:text="Computer : 0   Joueur : 0"
+        android:textSize="20dp" />
+</RelativeLayout>

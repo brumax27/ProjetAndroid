@@ -52,6 +52,14 @@ public class MainActivity extends Activity {
                 finish();
             }
         });
+
+        findViewById(R.id.practice).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RandomFightActivity.class);
+                startActivity(intent);
+            }
+        });
         
         findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
             @Override

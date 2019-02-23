@@ -1,5 +1,7 @@
 package com.projet.android.jankenpon.entity;
 
+import java.util.Objects;
+
 public class Score {
     private int playerVictories;
     private int opponentVictories;
@@ -37,8 +39,29 @@ public class Score {
         return getStatus() + " contre " + this.opponent;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Score)) return false;
+        Score score = (Score) o;
+        return getPlayerVictories() == score.getPlayerVictories() &&
+                getOpponentVictories() == score.getOpponentVictories() &&
+                Objects.equals(getOpponent(), score.getOpponent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPlayerVictories(), getOpponentVictories(), getOpponent());
+    }
+
+    @Override
     public String toString() {
-        return playerVictories + " - " + opponentVictories + " " + getMessage();
+        final StringBuffer sb = new StringBuffer("Score{");
+        sb.append("playerVictories=").append(playerVictories);
+        sb.append(", opponentVictories=").append(opponentVictories);
+        sb.append(", opponent='").append(opponent).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getStatus() {
