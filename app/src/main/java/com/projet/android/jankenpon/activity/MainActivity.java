@@ -64,8 +64,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signInIntent = client.getSignInIntent();
-                startActivityForResult(signInIntent, REQUEST_CODE);
+                startSignInIntent();
             }
         });
 
@@ -83,6 +82,13 @@ public class MainActivity extends Activity {
                 });
             }
         });
+    }
+
+    private void startSignInIntent() {
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
+                GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        Intent intent = signInClient.getSignInIntent();
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override

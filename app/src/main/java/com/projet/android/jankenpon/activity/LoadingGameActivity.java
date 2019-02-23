@@ -38,9 +38,9 @@ public class LoadingGameActivity extends AppCompatActivity {
 
     private static final int RC_SELECT_PLAYERS = 9006;
     private static final int RC_INVITATION_INBOX = 9008;
-    private static final String TAG = "GAME";
+    private static final String TAG = "GAME_TAG";
     private static final int MIN_PLAYERS = 2;
-    
+
     private Activity thisActivity = this;
     private Room mRoom;
     boolean mPlaying = false;
@@ -58,7 +58,7 @@ public class LoadingGameActivity extends AppCompatActivity {
                 .setAnimationDirection(DotProgressBar.LEFT_DIRECTION)
                 .build();
 
-        startQuickGame(0x0);
+//        startQuickGame(0x0);
         invitePlayers();
     }
 
@@ -90,7 +90,7 @@ public class LoadingGameActivity extends AppCompatActivity {
         // launch the player selection screen
         // minimum: 1 other player; maximum: 3 other players
         Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .getSelectOpponentsIntent(1, 3, true)
+                .getSelectOpponentsIntent(1, 1, true)
                 .addOnSuccessListener(new OnSuccessListener<Intent>() {
                     @Override
                     public void onSuccess(Intent intent) {
@@ -342,6 +342,7 @@ public class LoadingGameActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i(TAG, "stop");
         Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this)).leave(mJoinedRoomConfig, mRoom.getRoomId());
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
