@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".fragment.SymbolsFragment">
 
+    <TextView
+        android:id="@+id/secondsLeft"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textAlignment="center"
+        android:textSize="120sp" />
+
     <ImageView
         android:id="@+id/scissorsSym"
         android:layout_width="match_parent"

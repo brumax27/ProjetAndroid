@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +52,9 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     private RoomConfig mJoinedRoomConfig;
     private String mMyParticipantId;
 
+    // RPS Game
     private String playedSymbol;
+    private int secondsLeft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -378,21 +382,57 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
 
     private void startGame() {
         displayScreenGame();
-        new android.os.Handler().postDelayed(
+        final Handler h = new Handler();
+        secondsLeft = 5;
+        h.postDelayed(
             new Runnable() {
                 public void run() {
-                    if (playedSymbol == null) {
-                        playRandomSymbol();
+                    if(secondsLeft <= 0) {
+                        if (playedSymbol == null) {
+                            playRandomSymbol();
+                            updateSymbolsView();
+                        }
+                        Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                        return;
                     }
-                    Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                    gameTick();
+                    h.postDelayed(this, 1000);
                 }
             },
-            5000);
+            1000);
+    }
+
+    private void updateSymbolsView() {
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        if (allFragments != null) {
+            for (Fragment fragment : allFragments) {
+                if (fragment instanceof SymbolsFragment) {
+                    SymbolsFragment f1 = (SymbolsFragment) fragment;
+                    f1.updateChoosenSymbol(playedSymbol);
+                }
+            }
+        }
+    }
+
+    void gameTick() {
+        if (secondsLeft > 0) {
+            --secondsLeft;
+        }
+
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        if (allFragments != null) {
+            for (Fragment fragment : allFragments) {
+                if (fragment instanceof SymbolsFragment) {
+                    SymbolsFragment f1 = (SymbolsFragment) fragment;
+                    f1.updateTimer(secondsLeft);
+                }
+            }
+        }
     }
 
     private void playRandomSymbol() {
         int random = new Random().nextInt(3);
-        String[] symbols = { "paper", "scissors", "rock" };
+        String[] symbols = { "rock", "paper", "scissors" };
         playedSymbol = symbols[random];
     }
 

@@ -1,17 +1,18 @@
 package com.projet.android.jankenpon.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.projet.android.jankenpon.R;
 
-import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SymbolsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -23,33 +24,24 @@ public class SymbolsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getView().findViewById(R.id.rockSym).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAlpha(v, R.id.paperSym, R.id.scissorsSym);
-                ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction("rock");
-            }
-        });
-        getView().findViewById(R.id.scissorsSym).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAlpha(v, R.id.paperSym, R.id.rockSym);
-                ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction("scissors");
-            }
-        });
-        getView().findViewById(R.id.paperSym).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAlpha(v, R.id.rockSym, R.id.scissorsSym);
-                ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction("paper");
-            }
-        });
+
+        for(final Map.Entry<String, Integer> entry : symbols().entrySet()) {
+            getView().findViewById(entry.getValue()).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateChoosenSymbol(entry.getKey());
+                    ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction(entry.getKey());
+                }
+            });
+        }
     }
 
-    private void setAlpha(View v, int symbol1, int symbol2) {
-        v.setAlpha(1f);
-        getView().findViewById(symbol1).setAlpha(0.5f);
-        getView().findViewById(symbol2).setAlpha(0.5f);
+    public void updateChoosenSymbol(String playedSymbol) {
+        for(Map.Entry<String, Integer> entry : symbols().entrySet()) {
+            String symbol = entry.getKey();
+            int id = entry.getValue();
+            getView().findViewById(id).setAlpha(symbol == playedSymbol ? 1f : 0.5f);
+        }
     }
 
     @Override
@@ -74,6 +66,20 @@ public class SymbolsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void updateTimer(int secondsLeft) {
+        TextView timer = getView().findViewById(R.id.secondsLeft);
+        timer.setText(Integer.toString(secondsLeft));
+    }
+
+    public HashMap<String, Integer> symbols() {
+        HashMap<String, Integer> symbols = new HashMap<>();
+        symbols.put("rock", R.id.rockSym);
+        symbols.put("paper", R.id.paperSym);
+        symbols.put("scissors", R.id.scissorsSym);
+
+        return symbols;
     }
 
     /**
