@@ -35,6 +35,7 @@ import com.projet.android.jankenpon.fragment.SymbolsFragment;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 public class LoadingGameActivity extends AppCompatActivity implements SymbolsFragment.OnFragmentInteractionListener {
 
@@ -48,6 +49,8 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     boolean mPlaying = false;
     private RoomConfig mJoinedRoomConfig;
     private String mMyParticipantId;
+
+    private String playedSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -375,6 +378,22 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
 
     private void startGame() {
         displayScreenGame();
+        new android.os.Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                    if (playedSymbol == null) {
+                        playRandomSymbol();
+                    }
+                    Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                }
+            },
+            5000);
+    }
+
+    private void playRandomSymbol() {
+        int random = new Random().nextInt(3);
+        String[] symbols = { "paper", "scissors", "rock" };
+        playedSymbol = symbols[random];
     }
 
     private void displayScreenGame() {
@@ -398,5 +417,6 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     @Override
     public void onFragmentInteraction(String symbol) {
         Log.i(TAG, "symbol: " + symbol);
+        playedSymbol = symbol;
     }
 }
