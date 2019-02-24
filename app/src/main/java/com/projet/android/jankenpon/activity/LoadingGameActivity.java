@@ -380,26 +380,45 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    private int victories;
+
     private void startGame() {
         displayScreenGame();
         final Handler h = new Handler();
-        secondsLeft = 5;
-        h.postDelayed(
-            new Runnable() {
-                public void run() {
-                    if(secondsLeft <= 0) {
-                        if (playedSymbol == null) {
-                            playRandomSymbol();
-                            updateSymbolsView();
-                        }
-                        Log.i(TAG, "Choosen symbol: " + playedSymbol);
-                        return;
-                    }
-                    gameTick();
-                    h.postDelayed(this, 1000);
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                secondsLeft = 5;
+                playedSymbol = null;
+                playTurn(h);
+
+                if (++victories == 2) {
+                    return;
                 }
-            },
-            1000);
+
+                refreshScreeGame();
+                h.postDelayed(this, 8000);
+            }
+        });
+    }
+
+    private void playTurn(final Handler h) {
+        h.postDelayed(
+                new Runnable() {
+                    public void run() {
+                        if(secondsLeft <= 0) {
+                            if (playedSymbol == null) {
+                                playRandomSymbol();
+                                updateSymbolsView();
+                            }
+                            Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                            return;
+                        }
+                        gameTick();
+                        h.postDelayed(this, 1000);
+                    }
+                },
+                1000);
     }
 
     private void updateSymbolsView() {
@@ -407,6 +426,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         if (allFragments != null) {
             for (Fragment fragment : allFragments) {
                 if (fragment instanceof SymbolsFragment) {
+                    Log.i(TAG, "update symbols");
                     SymbolsFragment f1 = (SymbolsFragment) fragment;
                     f1.updateChoosenSymbol(playedSymbol);
                 }
@@ -415,6 +435,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     }
 
     void gameTick() {
+        Log.i(TAG, "tic: " + secondsLeft);
         if (secondsLeft > 0) {
             --secondsLeft;
         }
@@ -451,6 +472,14 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.symbolsFragmentDestination, symbolsFragment);
+        fragmentTransaction.commit();
+    }
+    
+    private void refreshScreeGame() {
+        SymbolsFragment symbolsFragment = new SymbolsFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.symbolsFragmentDestination, symbolsFragment);
         fragmentTransaction.commit();
     }
 
