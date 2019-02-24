@@ -6,8 +6,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.github.silvestrpredko.dotprogressbar.DotProgressBar;
@@ -17,7 +20,6 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Invitation;
-import com.google.android.gms.games.multiplayer.InvitationCallback;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.OnRealTimeMessageReceivedListener;
@@ -27,14 +29,14 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.projet.android.jankenpon.R;
+import com.projet.android.jankenpon.fragment.SymbolsFragment;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class LoadingGameActivity extends AppCompatActivity {
+public class LoadingGameActivity extends AppCompatActivity implements SymbolsFragment.OnFragmentInteractionListener {
 
     private static final int RC_SELECT_PLAYERS = 9006;
     private static final int RC_INVITATION_INBOX = 9008;
@@ -206,7 +208,7 @@ public class LoadingGameActivity extends AppCompatActivity {
                 Log.w(TAG, "Error connecting to room: " + code);
                 // let screen go to sleep
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+                startGame();
             }
         }
     };
@@ -214,21 +216,28 @@ public class LoadingGameActivity extends AppCompatActivity {
     private RoomStatusUpdateCallback mRoomStatusCallbackHandler = new RoomStatusUpdateCallback() {
         @Override
         public void onRoomConnecting(@Nullable Room room) {
+            Log.i(TAG, "onRoomConnecting");
             // Update the UI status since we are in the process of connecting to a specific room.
         }
 
         @Override
         public void onRoomAutoMatching(@Nullable Room room) {
+            Log.i(TAG, "onRoomAutoMatching");
+
             // Update the UI status since we are in the process of matching other players.
         }
 
         @Override
         public void onPeerInvitedToRoom(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeerInvitedToRoom");
+
             // Update the UI status since we are in the process of matching other players.
         }
 
         @Override
         public void onPeerDeclined(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeerDeclined");
+
             // Peer declined invitation, see if game should be canceled
             if (!mPlaying && shouldCancelGame(room)) {
                 Games.getRealTimeMultiplayerClient(thisActivity,
@@ -240,11 +249,15 @@ public class LoadingGameActivity extends AppCompatActivity {
 
         @Override
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeerJoined");
+
             // Update UI status indicating new players have joined!
         }
 
         @Override
         public void onPeerLeft(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeerLeft");
+
             // Peer left, see if game should be canceled.
             if (!mPlaying && shouldCancelGame(room)) {
                 Games.getRealTimeMultiplayerClient(thisActivity,
@@ -256,6 +269,8 @@ public class LoadingGameActivity extends AppCompatActivity {
 
         @Override
         public void onConnectedToRoom(@Nullable Room room) {
+            Log.i(TAG, "onConnectedToRoom");
+
             // Connected to room, record the room Id.
             mRoom = room;
             Games.getPlayersClient(thisActivity, GoogleSignIn.getLastSignedInAccount(thisActivity))
@@ -263,12 +278,16 @@ public class LoadingGameActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String playerId) {
                     mMyParticipantId = mRoom.getParticipantId(playerId);
+                    Log.i(TAG, "onSuccess");
+
                 }
             });
         }
 
         @Override
         public void onDisconnectedFromRoom(@Nullable Room room) {
+            Log.i(TAG, "onDisconnectedFromRoom");
+
             // This usually happens due to a network error, leave the game.
             Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(thisActivity))
                     .leave(mJoinedRoomConfig, room.getRoomId());
@@ -280,15 +299,19 @@ public class LoadingGameActivity extends AppCompatActivity {
 
         @Override
         public void onPeersConnected(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeersConnected: " + shouldStartGame(room));
+
             if (mPlaying) {
                 // add new player to an ongoing game
             } else if (shouldStartGame(room)) {
-                // start game!
+                startGame();
             }
         }
 
         @Override
         public void onPeersDisconnected(@Nullable Room room, @NonNull List<String> list) {
+            Log.i(TAG, "onPeersDisconnected");
+
             if (mPlaying) {
                 // do game-specific handling of this -- remove player's avatar
                 // from the screen, etc. If not enough players are left for
@@ -304,11 +327,15 @@ public class LoadingGameActivity extends AppCompatActivity {
 
         @Override
         public void onP2PConnected(@NonNull String participantId) {
+            Log.i(TAG, "onP2PConnected");
+
             // Update status due to new peer to peer connection.
         }
 
         @Override
         public void onP2PDisconnected(@NonNull String participantId) {
+            Log.i(TAG, "onP2PDisconnected");
+
             // Update status due to  peer to peer connection being disconnected.
         }
     };
@@ -344,5 +371,32 @@ public class LoadingGameActivity extends AppCompatActivity {
         Log.i(TAG, "stop");
         Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this)).leave(mJoinedRoomConfig, mRoom.getRoomId());
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private void startGame() {
+        displayScreenGame();
+    }
+
+    private void displayScreenGame() {
+        hideLoadingScreen();
+        displaySymbols();
+    }
+
+    private void hideLoadingScreen() {
+        findViewById(R.id.dot_progress_bar).setVisibility(View.GONE);
+        findViewById(R.id.loading_message).setVisibility(View.GONE);
+    }
+
+    private void displaySymbols() {
+        SymbolsFragment symbolsFragment = new SymbolsFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.symbolsFragmentDestination, symbolsFragment);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(String symbol) {
+        Log.i(TAG, "symbol: " + symbol);
     }
 }
