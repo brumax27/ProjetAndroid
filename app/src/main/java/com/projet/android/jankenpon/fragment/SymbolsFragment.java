@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class SymbolsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private boolean locked = false;
 
     public SymbolsFragment() {
         // Required empty public constructor
@@ -29,8 +30,10 @@ public class SymbolsFragment extends Fragment {
             getView().findViewById(entry.getValue()).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    updateChoosenSymbol(entry.getKey());
-                    ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction(entry.getKey());
+                    if (!locked) {
+                        updateChoosenSymbol(entry.getKey());
+                        ((OnFragmentInteractionListener) getActivity()).onFragmentInteraction(entry.getKey());
+                    }
                 }
             });
         }
@@ -80,6 +83,14 @@ public class SymbolsFragment extends Fragment {
         symbols.put("scissors", R.id.scissorsSym);
 
         return symbols;
+    }
+
+    public void lock() {
+        locked = true;
+    }
+
+    public void unlock() {
+        locked = false;
     }
 
     /**

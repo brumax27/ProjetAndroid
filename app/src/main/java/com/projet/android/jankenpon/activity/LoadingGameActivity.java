@@ -388,8 +388,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         h.post(new Runnable() {
             @Override
             public void run() {
-                secondsLeft = 5;
-                playedSymbol = null;
+                initTurn();
                 playTurn(h);
 
                 if (++victories == 2) {
@@ -397,7 +396,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                 }
 
                 refreshScreeGame();
-                h.postDelayed(this, 8000);
+                h.postDelayed(this, 10000);
             }
         });
     }
@@ -411,6 +410,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                                 playRandomSymbol();
                                 updateSymbolsView();
                             }
+                            lockSymbols();
                             Log.i(TAG, "Choosen symbol: " + playedSymbol);
                             return;
                         }
@@ -451,10 +451,40 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         }
     }
 
+    private void unlockSymbols() {
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        if (allFragments != null) {
+            for (Fragment fragment : allFragments) {
+                if (fragment instanceof SymbolsFragment) {
+                    SymbolsFragment f1 = (SymbolsFragment) fragment;
+                    f1.unlock();
+                }
+            }
+        }
+    }
+
+    private void lockSymbols() {
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        if (allFragments != null) {
+            for (Fragment fragment : allFragments) {
+                if (fragment instanceof SymbolsFragment) {
+                    SymbolsFragment f1 = (SymbolsFragment) fragment;
+                    f1.lock();
+                }
+            }
+        }
+    }
+
     private void playRandomSymbol() {
         int random = new Random().nextInt(3);
         String[] symbols = { "rock", "paper", "scissors" };
         playedSymbol = symbols[random];
+    }
+
+    private void initTurn() {
+        secondsLeft = 5;
+        playedSymbol = null;
+        unlockSymbols();
     }
 
     private void displayScreenGame() {
