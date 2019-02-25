@@ -30,10 +30,14 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.projet.android.jankenpon.R;
+import com.projet.android.jankenpon.fragment.OpponentFragment;
 import com.projet.android.jankenpon.fragment.SymbolsFragment;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +59,8 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     // RPS Game
     private String playedSymbol;
     private int secondsLeft;
+    private String opponentId;
+    private String opponentSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -256,7 +262,8 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
 
         @Override
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
-            Log.i(TAG, "onPeerJoined");
+            Log.i(TAG, "onPeerJoined " + list.get(0));
+            opponentId = list.get(0);
 
             // Update UI status indicating new players have joined!
         }
@@ -353,6 +360,18 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         pendingMessageSet.add(tokenId);
     }
 
+    private void sendMessage(byte[] message) {
+        Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
+            .sendReliableMessage(message, mRoom.getRoomId(), opponentId,
+                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                @Override
+                public void onComplete(@NonNull Task<Integer> task) {
+                    // Keep track of which messages are sent, if desired.
+                    recordMessageToken(task.getResult());
+                }
+            });
+    }
+
     private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback = new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
         @Override
         public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
@@ -368,6 +387,11 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         public void onRealTimeMessageReceived(@NonNull RealTimeMessage realTimeMessage) {
             // Handle messages received here.
             byte[] message = realTimeMessage.getMessageData();
+            try {
+                opponentSymbol = new String(message, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             // process message contents...
         }
     };
@@ -410,7 +434,9 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                                 playRandomSymbol();
                                 updateSymbolsView();
                             }
+                            sendMessage(playedSymbol.getBytes());
                             lockSymbols();
+                            displayOpponentSymbol();
                             Log.i(TAG, "Choosen symbol: " + playedSymbol);
                             return;
                         }
@@ -421,6 +447,28 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                 1000);
     }
 
+    private void displayOpponentSymbol() {
+        OpponentFragment opponentFragment = new OpponentFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.opponentFragmentDestination, opponentFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void hideOppenentSymbol() {
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (allFragments != null) {
+            for (Fragment fragment : allFragments) {
+                if (fragment instanceof OpponentFragment) {
+                    fragmentTransaction.remove(fragment);
+                }
+            }
+        }
+        fragmentTransaction.commit();
+    }
+
     private void updateSymbolsView() {
         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
         if (allFragments != null) {
@@ -429,6 +477,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                     Log.i(TAG, "update symbols");
                     SymbolsFragment f1 = (SymbolsFragment) fragment;
                     f1.updateChoosenSymbol(playedSymbol);
+                    f1.hideTimer();
                 }
             }
         }
@@ -485,6 +534,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         secondsLeft = 5;
         playedSymbol = null;
         unlockSymbols();
+        hideOppenentSymbol();
     }
 
     private void displayScreenGame() {
@@ -509,8 +559,9 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         SymbolsFragment symbolsFragment = new SymbolsFragment();
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.symbolsFragmentDestination, symbolsFragment);
+        fragmentTransaction.remove(symbolsFragment);
         fragmentTransaction.commit();
+        displaySymbols();
     }
 
     @Override

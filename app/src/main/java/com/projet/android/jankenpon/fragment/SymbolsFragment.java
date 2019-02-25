@@ -76,6 +76,10 @@ public class SymbolsFragment extends Fragment {
         timer.setText(Integer.toString(secondsLeft));
     }
 
+    public void hideTimer() {
+        getView().findViewById(R.id.secondsLeft).setVisibility(View.GONE);
+    }
+
     public HashMap<String, Integer> symbols() {
         HashMap<String, Integer> symbols = new HashMap<>();
         symbols.put("rock", R.id.rockSym);
