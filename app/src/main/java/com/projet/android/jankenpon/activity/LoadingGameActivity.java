@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.Task;
 import com.projet.android.jankenpon.R;
 import com.projet.android.jankenpon.fragment.OpponentFragment;
 import com.projet.android.jankenpon.fragment.SymbolsFragment;
+import com.projet.android.jankenpon.utils.Game;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     private int secondsLeft;
     private String opponentId;
     private String opponentSymbol;
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -400,14 +402,14 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "stop");
-        Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this)).leave(mJoinedRoomConfig, mRoom.getRoomId());
+        Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this))
+                .leave(mJoinedRoomConfig, mRoom.getRoomId());
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    private int victories;
-
     private void startGame() {
         displayScreenGame();
+        game = new Game();
         final Handler h = new Handler();
         h.post(new Runnable() {
             @Override
@@ -415,11 +417,12 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                 initTurn();
                 playTurn(h);
 
-                if (++victories == 2) {
+                Log.i(TAG, "handler victories: " + game.victories + " defeats: " + game.defeats);
+                if (game.finished()) {
+                    Log.i(TAG, "RETURN");
                     return;
                 }
 
-                refreshScreeGame();
                 h.postDelayed(this, 10000);
             }
         });
@@ -432,12 +435,17 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                         if(secondsLeft <= 0) {
                             if (playedSymbol == null) {
                                 playRandomSymbol();
-                                updateSymbolsView();
                             }
+                            displayEndOfTurn();
                             sendMessage(playedSymbol.getBytes());
-                            lockSymbols();
-                            displayOpponentSymbol();
-                            Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                            h.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String result = game.playTurn(playedSymbol, opponentSymbol);
+                                    displayOpponentSymbol(result);
+                                    Log.i(TAG, "Choosen symbol: " + playedSymbol);
+                                }
+                            }, 2000);
                             return;
                         }
                         gameTick();
@@ -447,8 +455,8 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
                 1000);
     }
 
-    private void displayOpponentSymbol() {
-        OpponentFragment opponentFragment = OpponentFragment.newInstance("rock", "Défaite");
+    private void displayOpponentSymbol(String result) {
+        OpponentFragment opponentFragment = OpponentFragment.newInstance(opponentSymbol, result);
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.opponentFragmentDestination, opponentFragment);
@@ -469,15 +477,14 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         fragmentTransaction.commit();
     }
 
-    private void updateSymbolsView() {
+    private void displayEndOfTurn() {
         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
         if (allFragments != null) {
             for (Fragment fragment : allFragments) {
                 if (fragment instanceof SymbolsFragment) {
                     Log.i(TAG, "update symbols");
                     SymbolsFragment f1 = (SymbolsFragment) fragment;
-                    f1.updateChoosenSymbol(playedSymbol);
-                    f1.hideTimer();
+                    f1.endOfTurn(playedSymbol);
                 }
             }
         }
@@ -500,25 +507,13 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         }
     }
 
-    private void unlockSymbols() {
+    private void resetSymbol() {
         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
         if (allFragments != null) {
             for (Fragment fragment : allFragments) {
                 if (fragment instanceof SymbolsFragment) {
                     SymbolsFragment f1 = (SymbolsFragment) fragment;
                     f1.reset();
-                }
-            }
-        }
-    }
-
-    private void lockSymbols() {
-        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
-        if (allFragments != null) {
-            for (Fragment fragment : allFragments) {
-                if (fragment instanceof SymbolsFragment) {
-                    SymbolsFragment f1 = (SymbolsFragment) fragment;
-                    f1.lock();
                 }
             }
         }
@@ -533,7 +528,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     private void initTurn() {
         secondsLeft = 5;
         playedSymbol = null;
-        unlockSymbols();
+        resetSymbol();
         hideOppenentSymbol();
     }
 
@@ -553,15 +548,6 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.symbolsFragmentDestination, symbolsFragment);
         fragmentTransaction.commit();
-    }
-    
-    private void refreshScreeGame() {
-        SymbolsFragment symbolsFragment = new SymbolsFragment();
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.remove(symbolsFragment);
-        fragmentTransaction.commit();
-        displaySymbols();
     }
 
     @Override
