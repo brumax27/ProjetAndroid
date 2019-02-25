@@ -43,7 +43,7 @@ public class SymbolsFragment extends Fragment {
         for(Map.Entry<String, Integer> entry : symbols().entrySet()) {
             String symbol = entry.getKey();
             int id = entry.getValue();
-            getView().findViewById(id).setAlpha(symbol == playedSymbol ? 1f : 0.5f);
+            getView().findViewById(id).setAlpha(symbol == playedSymbol ? 1f : 0.3f);
         }
     }
 
@@ -80,6 +80,10 @@ public class SymbolsFragment extends Fragment {
         getView().findViewById(R.id.secondsLeft).setVisibility(View.GONE);
     }
 
+    public void showTimer() {
+        getView().findViewById(R.id.secondsLeft).setVisibility(View.VISIBLE);
+    }
+
     public HashMap<String, Integer> symbols() {
         HashMap<String, Integer> symbols = new HashMap<>();
         symbols.put("rock", R.id.rockSym);
@@ -95,6 +99,16 @@ public class SymbolsFragment extends Fragment {
 
     public void unlock() {
         locked = false;
+    }
+
+    public void reset() {
+        for(Map.Entry<String, Integer> entry : symbols().entrySet()) {
+            int id = entry.getValue();
+            getView().findViewById(id).setAlpha(1f);
+        }
+        showTimer();
+        updateTimer(5);
+        unlock();
     }
 
     /**

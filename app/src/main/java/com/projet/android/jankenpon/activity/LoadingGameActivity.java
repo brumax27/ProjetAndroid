@@ -448,7 +448,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     }
 
     private void displayOpponentSymbol() {
-        OpponentFragment opponentFragment = new OpponentFragment();
+        OpponentFragment opponentFragment = OpponentFragment.newInstance("rock", "Défaite");
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.opponentFragmentDestination, opponentFragment);
@@ -506,7 +506,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
             for (Fragment fragment : allFragments) {
                 if (fragment instanceof SymbolsFragment) {
                     SymbolsFragment f1 = (SymbolsFragment) fragment;
-                    f1.unlock();
+                    f1.reset();
                 }
             }
         }
