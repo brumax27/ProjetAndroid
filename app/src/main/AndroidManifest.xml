@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.projet.android.jankenpon">
 
+    <!-- To access Google+ APIs: -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/pfc"
@@ -23,7 +26,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoadingGameActivity" />
+        <activity
+            android:name=".activity.LoadingGameActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"/>
         <activity android:name=".activity.ScoresActivity" />
 
         <receiver android:name=".widget.TendencyWidget">
@@ -36,7 +42,7 @@
                 android:resource="@xml/tendency_widget_info" />
         </receiver>
 
-        <activity android:name=".activity.RandomFightActivity"></activity>
+        <activity android:name=".activity.RandomFightActivity" />
     </application>
 
 </manifest>

@@ -45,10 +45,9 @@ public final class FirebaseUserUtils {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User userSnap = dataSnapshot.getValue(User.class);
-                user.setVictories(userSnap.getVictories());
-                user.setDefeats(userSnap.getDefeats());
-
-                user.addPaperHits(userSnap.getPaperHits())
+                user.addPaperHits(userSnap.getVictories())
+                    .addPaperHits(userSnap.getDefeats())
+                    .addPaperHits(userSnap.getPaperHits())
                     .addRockHits(userSnap.getRockHits())
                     .addScissorsHits(userSnap.getScissorsHits());
             }

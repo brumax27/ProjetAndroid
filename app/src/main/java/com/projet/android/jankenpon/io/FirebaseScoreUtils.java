@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.projet.android.jankenpon.entity.Score;
 
 import java.util.List;
+import java.util.UUID;
 
 public final class FirebaseScoreUtils {
 
@@ -39,9 +40,10 @@ public final class FirebaseScoreUtils {
         });
     }
 
-    public void addScores(final List<Score> scores){
-        database.getReference("matches")
-                .child(String.valueOf(scores.get(0).getPlayerVictories()))
-                .setValue(scores);
+    public void addScore(String playerId, final Score score){
+        UUID uuid = UUID.randomUUID();
+        database.getReference("matches").child(playerId)
+                .child(uuid.toString())
+                .setValue(score);
     }
 }

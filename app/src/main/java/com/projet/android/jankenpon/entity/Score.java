@@ -17,9 +17,7 @@ public class Score {
         this.opponent = opponent;
     }
 
-    public Score(int playerVictories, int opponentVictories, String opponent) {
-        this.playerVictories = playerVictories;
-        this.opponentVictories = opponentVictories;
+    public Score(String opponent) {
         this.opponent = opponent;
     }
 
@@ -33,6 +31,14 @@ public class Score {
 
     public String getOpponent() {
         return opponent;
+    }
+
+    public void incrementVictories() {
+        playerVictories++;
+    }
+
+    public void incrementDefeats() {
+        opponentVictories++;
     }
 
     public String getMessage() {
@@ -56,11 +62,9 @@ public class Score {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Score{");
-        sb.append("playerVictories=").append(playerVictories);
-        sb.append(", opponentVictories=").append(opponentVictories);
-        sb.append(", opponent='").append(opponent).append('\'');
-        sb.append('}');
+        final StringBuffer sb = new StringBuffer();
+        sb.append(playerVictories).append(" - ").append(opponentVictories);
+        sb.append("    ").append(getMessage());
         return sb.toString();
     }
 

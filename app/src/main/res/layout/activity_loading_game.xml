@@ -6,7 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".activity.LoadingGameActivity">
 
+    <FrameLayout
+        android:id="@+id/opponentFragmentDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        custom:layout_constraintBottom_toBottomOf="@+id/symbolsFragmentDestination"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintVertical_bias="0.00999999"
+        tools:layout_editor_absoluteX="0dp">
+
+    </FrameLayout>
+
     <TextView
+        android:id="@+id/loading_message"
         style="@style/GreenText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,5 +52,21 @@
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintTop_toTopOf="parent"
         custom:startColor="@color/light_blue_A700" />
+
+    <FrameLayout
+        android:id="@+id/symbolsFragmentDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintStart_toStartOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintVertical_bias="1.0">
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
