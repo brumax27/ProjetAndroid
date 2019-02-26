@@ -63,6 +63,8 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     private String opponentId;
     private String opponentSymbol;
     private Game game;
+    private boolean versusAI = false;
+    private boolean disconnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +214,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
 
         @Override
         public void onLeftRoom(int code, @NonNull String roomId) {
+            versusAI = true;
             Log.d(TAG, "Left room" + roomId);
         }
 
@@ -311,6 +314,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
             // show error message and return to main screen
             mRoom = null;
             mJoinedRoomConfig = null;
+            versusAI = true;
         }
 
         @Override
@@ -363,15 +367,22 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     }
 
     private void sendMessage(byte[] message) {
+        if(versusAI || disconnected) { return; }
         Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
-            .sendReliableMessage(message, mRoom.getRoomId(), opponentId,
-                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                @Override
-                public void onComplete(@NonNull Task<Integer> task) {
-                    // Keep track of which messages are sent, if desired.
-                    recordMessageToken(task.getResult());
-                }
-            });
+                .sendReliableMessage(message, mRoom.getRoomId(), opponentId,
+                        handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+            @Override
+            public void onComplete(@NonNull Task<Integer> task) {
+                // Keep track of which messages are sent, if desired.
+                recordMessageToken(task.getResult());
+            }
+        });
+    }
+
+    private void checkOpponentMessage() {
+        if (opponentSymbol == null || versusAI == true) {
+            opponentSymbol = playRandomSymbol();
+        }
     }
 
     private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback = new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
@@ -402,8 +413,11 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "stop");
-        Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this))
-                .leave(mJoinedRoomConfig, mRoom.getRoomId());
+        disconnected = true;
+        if(mRoom != null) {
+            Games.getRealTimeMultiplayerClient(thisActivity, GoogleSignIn.getLastSignedInAccount(this))
+                    .leave(mJoinedRoomConfig, mRoom.getRoomId());
+        }
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -414,6 +428,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         h.post(new Runnable() {
             @Override
             public void run() {
+                if(disconnected) { return; }
                 initTurn();
                 playTurn(h);
 
@@ -432,15 +447,17 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         h.postDelayed(
                 new Runnable() {
                     public void run() {
+                        if(disconnected) { return; }
                         if(secondsLeft <= 0) {
                             if (playedSymbol == null) {
-                                playRandomSymbol();
+                                playedSymbol = playRandomSymbol();
                             }
                             displayEndOfTurn();
                             sendMessage(playedSymbol.getBytes());
                             h.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    checkOpponentMessage();
                                     String result = game.playTurn(playedSymbol, opponentSymbol);
                                     displayOpponentSymbol(result);
                                     Log.i(TAG, "Choosen symbol: " + playedSymbol);
@@ -519,10 +536,10 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         }
     }
 
-    private void playRandomSymbol() {
+    private String playRandomSymbol() {
         int random = new Random().nextInt(3);
         String[] symbols = { "rock", "paper", "scissors" };
-        playedSymbol = symbols[random];
+        return symbols[random];
     }
 
     private void initTurn() {
