@@ -17,9 +17,7 @@ public class Score {
         this.opponent = opponent;
     }
 
-    public Score(int playerVictories, int opponentVictories, String opponent) {
-        this.playerVictories = playerVictories;
-        this.opponentVictories = opponentVictories;
+    public Score(String opponent) {
         this.opponent = opponent;
     }
 
@@ -33,6 +31,14 @@ public class Score {
 
     public String getOpponent() {
         return opponent;
+    }
+
+    public void incrementVictories() {
+        playerVictories++;
+    }
+
+    public void incrementDefeats() {
+        opponentVictories++;
     }
 
     public String getMessage() {

@@ -34,7 +34,7 @@ public class ScoresActivity extends AppCompatActivity {
         if (CacheScoresUtil.isCacheEmpty(context)) {
 
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-            new FirebaseScoreUtils(FirebaseDatabase.getInstance()).getByPlayerId("1",scores);
+            new FirebaseScoreUtils(FirebaseDatabase.getInstance()).getByPlayerId(account.getId(), scores);
             if (scores != null && !scores.isEmpty()) {
                 CacheScoresUtil.writeCache(context, scores);
                 CacheScoresUtil.logList("FROM FIREBASE", scores);

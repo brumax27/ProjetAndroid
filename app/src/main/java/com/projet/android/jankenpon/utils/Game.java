@@ -1,13 +1,23 @@
 package com.projet.android.jankenpon.utils;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.database.FirebaseDatabase;
+import com.projet.android.jankenpon.entity.Score;
+import com.projet.android.jankenpon.entity.User;
+import com.projet.android.jankenpon.io.FirebaseScoreUtils;
+import com.projet.android.jankenpon.io.FirebaseUserUtils;
+
 import java.util.HashMap;
+import java.util.Map;
 
 public class Game {
-    public int victories = 0;
-    public int defeats = 0;
-    public HashMap<String, Integer> playedSymbols;
+    private User user;
+    private Score score;
+    private String id;
 
     // 0 = draw
     // 1 = victory
@@ -18,7 +28,7 @@ public class Game {
             {1, 0, 2}, // paper
             {2, 1, 0}  // scissors
     };
-    private static final HashMap<String, Integer> SYMBOLS = new HashMap<String, Integer>() {
+    private static final Map<String, Integer> SYMBOLS = new HashMap<String, Integer>() {
         {
             put("rock", 0);
             put("paper", 1);
@@ -29,26 +39,29 @@ public class Game {
     private static final String[] RESULT = { "Egalité", "Victoire", "Défaite" };
     private static final String TAG = "GAME_TAG";
 
-    public Game() {
-        playedSymbols = new HashMap<>();
-        playedSymbols.put("rock", 0);
-        playedSymbols.put("paper", 0);
-        playedSymbols.put("scissors", 0);
+    public Game(Context context, String opponent) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(context);
+        id = account.getId();
+        user = new User();
+        new FirebaseUserUtils(FirebaseDatabase.getInstance()).getByPlayerId(id, user);
+        score = new Score(opponent);
     }
 
     public String playTurn(String playedSymbol, String opponentSymbol) {
         Log.i(TAG, "played: " + playedSymbol + " opponent: " + opponentSymbol);
-        playedSymbols.put(playedSymbol, playedSymbols.get(playedSymbol) + 1);
+
+        incrementSymbol(playedSymbol);
+
+
         int result = RULES[symbolIndex(playedSymbol)][symbolIndex(opponentSymbol)];
         switch (result) {
             case 1:
-                victories++;
+                score.incrementVictories();
                 break;
             case 2:
-                defeats++;
+                score.incrementDefeats();
                 break;
         }
-        Log.i(TAG, "Fragment victories: " + victories + " defeats: " + defeats);
         return RESULT[result];
     }
 
@@ -57,9 +70,39 @@ public class Game {
     }
 
     public boolean finished() {
-        if (victories == VICTORY_CONDITION || defeats == VICTORY_CONDITION) {
+        Log.i("DATA_TAG", score.toString());
+        if (score.getPlayerVictories() == VICTORY_CONDITION
+                || score.getOpponentVictories() == VICTORY_CONDITION) {
             return true;
         }
         return false;
+    }
+
+    private void incrementSymbol(String playedSymbol) {
+        switch (playedSymbol) {
+            case "rock":
+                user.addRockHits(1);
+                break;
+            case "paper":
+                user.addPaperHits(1);
+                break;
+            case "scissors":
+                user.addScissorsHits(1);
+                break;
+        }
+    }
+
+    public void pushToFirebase() {
+        if (win()) {
+            user.addVictories(1);
+        } else {
+            user.addDefeats(1);
+        }
+        new FirebaseUserUtils(FirebaseDatabase.getInstance()).updateUser(id, user);
+        new FirebaseScoreUtils(FirebaseDatabase.getInstance()).addScore(id, score);
+    }
+
+    private boolean win() {
+        return score.getPlayerVictories() == 2;
     }
 }

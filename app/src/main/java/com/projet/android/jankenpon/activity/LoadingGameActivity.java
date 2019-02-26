@@ -60,11 +60,11 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     // RPS Game
     private String playedSymbol;
     private int secondsLeft;
-    private String opponentId;
     private String opponentSymbol;
     private Game game;
     private boolean versusAI = false;
     private boolean disconnected = false;
+    private Participant opponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,7 +268,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
         @Override
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
             Log.i(TAG, "onPeerJoined " + list.get(0));
-            opponentId = list.get(0);
+            opponent = room.getParticipant(list.get(0));
 
             // Update UI status indicating new players have joined!
         }
@@ -369,7 +369,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
     private void sendMessage(byte[] message) {
         if(versusAI || disconnected) { return; }
         Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .sendReliableMessage(message, mRoom.getRoomId(), opponentId,
+                .sendReliableMessage(message, mRoom.getRoomId(), opponent.getParticipantId(),
                         handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
             @Override
             public void onComplete(@NonNull Task<Integer> task) {
@@ -423,20 +423,18 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
 
     private void startGame() {
         displayScreenGame();
-        game = new Game();
+        game = new Game(this, opponent.getDisplayName());
         final Handler h = new Handler();
         h.post(new Runnable() {
             @Override
             public void run() {
                 if(disconnected) { return; }
-                initTurn();
-                playTurn(h);
-
-                Log.i(TAG, "handler victories: " + game.victories + " defeats: " + game.defeats);
                 if (game.finished()) {
-                    Log.i(TAG, "RETURN");
+                    game.pushToFirebase();
                     return;
                 }
+                initTurn();
+                playTurn(h);
 
                 h.postDelayed(this, 10000);
             }
