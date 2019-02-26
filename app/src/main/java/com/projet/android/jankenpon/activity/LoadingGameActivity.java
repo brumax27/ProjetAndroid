@@ -430,7 +430,7 @@ public class LoadingGameActivity extends AppCompatActivity implements SymbolsFra
             public void run() {
                 if(disconnected) { return; }
                 if (game.finished()) {
-                    game.pushToFirebase();
+                    game.persistResult(thisActivity);
                     return;
                 }
                 initTurn();

@@ -62,11 +62,9 @@ public class Score {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Score{");
-        sb.append("playerVictories=").append(playerVictories);
-        sb.append(", opponentVictories=").append(opponentVictories);
-        sb.append(", opponent='").append(opponent).append('\'');
-        sb.append('}');
+        final StringBuffer sb = new StringBuffer();
+        sb.append(playerVictories).append(" - ").append(opponentVictories);
+        sb.append("    ").append(getMessage());
         return sb.toString();
     }
 

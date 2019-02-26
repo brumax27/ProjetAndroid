@@ -8,6 +8,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.FirebaseDatabase;
 import com.projet.android.jankenpon.entity.Score;
 import com.projet.android.jankenpon.entity.User;
+import com.projet.android.jankenpon.io.CacheScoresUtil;
 import com.projet.android.jankenpon.io.FirebaseScoreUtils;
 import com.projet.android.jankenpon.io.FirebaseUserUtils;
 
@@ -92,7 +93,7 @@ public class Game {
         }
     }
 
-    public void pushToFirebase() {
+    public void persistResult(Context context) {
         if (win()) {
             user.addVictories(1);
         } else {
@@ -100,6 +101,8 @@ public class Game {
         }
         new FirebaseUserUtils(FirebaseDatabase.getInstance()).updateUser(id, user);
         new FirebaseScoreUtils(FirebaseDatabase.getInstance()).addScore(id, score);
+        if (CacheScoresUtil.isCacheEmpty(context)) { return; }
+        CacheScoresUtil.addScore(context, score);
     }
 
     private boolean win() {
