@@ -36,6 +36,8 @@ public class MainActivity extends Activity {
         findViewById(R.id.play).setVisibility(View.GONE);
         findViewById(R.id.results).setVisibility(View.GONE);
 
+        getClients();
+
         findViewById(R.id.results).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,6 +136,15 @@ public class MainActivity extends Activity {
             }
         };
         mFirebaseDatabase.addListenerForSingleValueEvent(userListener);
+    }
+
+    private void getClients(){
+        GoogleSignInOptions gso  = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        this.client = GoogleSignIn.getClient(this, gso);
     }
 }
 
